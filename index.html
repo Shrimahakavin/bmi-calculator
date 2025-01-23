@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, lightblue, grey);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: lightgrey;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        header button {
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #90caf9, #42a5f5);
+            color: white;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        header button:hover {
+            background: linear-gradient(to right, #42a5f5, #1e88e5);
+            transform: scale(1.05);
+        }
+
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .result-section {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: white;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .result-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .diet, .exercise {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f9fbe7;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .diet.visible, .exercise.visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            margin: 10px 0;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            box-shadow: 0 0 8px #42a5f5;
+            outline: none;
+        }
+
+        button.submit-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #4caf50;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        button.submit-btn:hover {
+            background: #388e3c;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>BMI Calculator</h1>
+        <div>
+            <button id="diet-btn">Diet</button>
+            <button id="exercise-btn">Exercise</button>
+        </div>
+    </header>
+    <div class="container">
+        <h2>Calculate Your BMI</h2>
+        <form id="bmi-form">
+            <input type="number" id="weight" placeholder="Enter your weight (kg)" required>
+            <br>
+            <input type="number" id="height" placeholder="Enter your height (m)" step="0.01" required>
+            <br>
+            <button type="submit" class="submit-btn">Calculate BMI</button>
+        </form>
+
+        <div id="result" class="result-section"></div>
+        
+        <div id="diet" class="diet"></div>
+        <div id="exercise" class="exercise"></div>
+    </div>
+
+    <script>
+        const bmiForm = document.getElementById('bmi-form');
+        const resultDiv = document.getElementById('result');
+        const dietDiv = document.getElementById('diet');
+        const exerciseDiv = document.getElementById('exercise');
+        const dietBtn = document.getElementById('diet-btn');
+        const exerciseBtn = document.getElementById('exercise-btn');
+
+        dietBtn.addEventListener('click', () => {
+            dietDiv.classList.add('visible');
+            exerciseDiv.classList.remove('visible');
+        });
+
+        exerciseBtn.addEventListener('click', () => {
+            exerciseDiv.classList.add('visible');
+            dietDiv.classList.remove('visible');
+        });
+
+        bmiForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value);
+
+            if (weight > 0 && height > 0) {
+                const bmi = (weight / (height * height)).toFixed(2);
+                resultDiv.textContent = `Your BMI is ${bmi}`;
+
+                if (bmi < 18.5) {
+                    resultDiv.innerHTML += '<br>You are underweight.';
+                    dietDiv.innerHTML = `
+                        <h3>Diet Plan for Underweight:</h3>
+                        <ul>
+                            <li>Paneer paratha with curd</li>
+                            <li>Bananas and peanut butter</li>
+                            <li>Full cream milk and dry fruits</li>
+                            <li>Masoor dal with rice and ghee</li>
+                            <li>Egg curry with paratha</li>
+                        </ul>`;
+                    exerciseDiv.innerHTML = `
+                        <h3>Exercise Plan for Underweight:</h3>
+                        <p>Light strength training, yoga, and stretching exercises for muscle development.</p>`;
+                } else if (bmi >= 18.5 && bmi <= 24.9) {
+                    resultDiv.innerHTML += '<br>You have a normal BMI.';
+                    dietDiv.innerHTML = `
+                        <h3>Diet Plan for Normal:</h3>
+                        <ul>
+                            <li>Chapati with dal and sabzi</li>
+                            <li>Idli with sambar and coconut chutney</li>
+                            <li>Seasonal fruits and nuts</li>
+                            <li>Curd rice with pickle</li>
+                            <li>Vegetable upma with a glass of milk</li>
+                        </ul>`;
+                    exerciseDiv.innerHTML = `
+                        <h3>Exercise Plan for Normal:</h3>
+                        <p>Regular moderate-intensity exercises like jogging, brisk walking, and cycling.</p>`;
+                } else {
+                    resultDiv.innerHTML += '<br>You are obese.';
+                    dietDiv.innerHTML = `
+                        <h3>Diet Plan for Obese:</h3>
+                        <ul>
+                            <li>Steamed sprouts salad</li>
+                            <li>Multigrain roti with boiled vegetables</li>
+                            <li>Brown rice with dal and leafy vegetables</li>
+                            <li>Oats porridge with skimmed milk</li>
+                            <li>Clear vegetable soup with whole wheat bread</li>
+                        </ul>`;
+                    exerciseDiv.innerHTML = `
+                        <h3>Exercise Plan for Obese:</h3>
+                        <p>Cardio exercises like walking, swimming, or cycling, and strength training twice a week.</p>`;
+                }
+
+                resultDiv.classList.add('visible');
+                dietDiv.classList.add('visible');
+                exerciseDiv.classList.remove('visible');
+            } else {
+                resultDiv.textContent = 'Please enter valid weight and height values.';
+                resultDiv.classList.add('visible');
+            }
+        });
+    </script>
+</body>
+</html>
